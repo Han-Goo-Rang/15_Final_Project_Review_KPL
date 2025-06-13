@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Dilibrary Library</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-sidebar">
+      <img src="/images/logo.png" alt="Dilibrary Logo"/>
+      <div class="auth-title">
+        <h2>Los Librario Pinguinos Projeca</h2>
+      </div>
+      <p class="auth-description">
+        "Your premier digital library for borrowing and reading books"
+      </p>
+    </div>
+    <div class="auth-content">
+      <div class="time-container">
+          <span class="time"></span>
+          <span class="date"></span>
+      </div>
+      <img src="/images/logo.png" alt="Dilibrary Logo" />
+      <h2>Selamat Datang Kembali!!</h2>
+      <p>_masukkan data untuk log in_</p>
+
+      <form id="login-form" novalidate>
+        <input type="text" name="username" placeholder="Username" required autocomplete="username" />
+        <input type="password" name="password" placeholder="Password" required autocomplete="current-password" />
+        <a href="/forgot-password">Lupa Password?</a>
+        <button type="submit" id="primary-btn">LOG IN</button>
+      </form>
+
+      <p>Baru di platform? <a href="/signup">Buat akun</a></p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginForm = document.getElementById('login-form');
+
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(loginForm);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+          const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            console.log('✅ Login berhasil');
+            localStorage.setItem('token', result.token);
+            window.location.href = '/dashboard.html?t=' + Date.now(); // redirect + anti-cache
+          } else {
+            alert(result.message || 'Login gagal');
+          }
+        } catch (error) {
+          console.error('❌ Error saat login:', error);
+          alert('Login request failed.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
